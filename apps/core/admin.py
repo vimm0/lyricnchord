@@ -10,12 +10,12 @@ class ArtistAdmin(admin.ModelAdmin):
 
 @admin.register(Band)
 class BandAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['name', 'album_count']
 
 
 @admin.register(Album)
 class AlbumAdmin(admin.ModelAdmin):
-    list_display = ['name', 'get_band_name']
+    list_display = ['name', 'get_band_name', 'song_count']
 
     @admin.display(ordering='band__name', description='Band')
     def get_band_name(self, obj):
@@ -24,4 +24,12 @@ class AlbumAdmin(admin.ModelAdmin):
 
 @admin.register(Song)
 class SongAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['name', 'get_album_name', 'get_band_name']
+
+    @admin.display(description='Album')
+    def get_album_name(self, obj):
+        return obj.album.name
+
+    @admin.display(description='Band')
+    def get_band_name(self, obj):
+        return obj.album.band.name
