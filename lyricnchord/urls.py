@@ -12,7 +12,7 @@ class SongSerializer(serializers.ModelSerializer):
 
 
 class SongViewSet(viewsets.ModelViewSet):
-    queryset = Song.objects.all()
+    queryset = Song.objects.all().order_by('name')
     serializer_class = SongSerializer
 
 
