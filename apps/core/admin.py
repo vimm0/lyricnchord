@@ -24,12 +24,12 @@ class AlbumAdmin(admin.ModelAdmin):
 
 @admin.register(Song)
 class SongAdmin(admin.ModelAdmin):
-    list_display = ['name', 'get_album_name', 'get_band_name']
+    list_display = ['name', 'get_album_name']#, 'get_band_name']
 
     @admin.display(description='Album')
     def get_album_name(self, obj):
-        return obj.album.name
+        return [album.name for album in obj.album.all()]
 
-    @admin.display(description='Band')
-    def get_band_name(self, obj):
-        return obj.album.band.name
+    # @admin.display(description='Band')
+    # def get_band_name(self, obj):
+    #     return obj.album.band.name

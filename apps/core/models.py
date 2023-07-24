@@ -43,7 +43,7 @@ class Album(models.Model):
 
 
 class Song(models.Model):
-    album = models.ForeignKey(Album, on_delete=models.CASCADE)
+    album = models.ManyToManyField(Album)
     name = models.CharField(max_length=255)
     lyrics = models.TextField(null=True, blank=True)
 
