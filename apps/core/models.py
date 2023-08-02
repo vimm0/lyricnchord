@@ -4,6 +4,7 @@ from django.db import models
 
 class Artist(models.Model):
     name = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='artist/', null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -21,6 +22,7 @@ class Band(models.Model):
     artists = models.ManyToManyField(Artist)
     genre = models.ManyToManyField(Genre, blank=True)
     bio = models.TextField(blank=True, null=True)
+    image = models.ImageField(upload_to='band/', null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -33,6 +35,7 @@ class Band(models.Model):
 class Album(models.Model):
     name = models.CharField(max_length=255)
     band = models.ForeignKey(Band, on_delete=models.CASCADE)
+    cover = models.ImageField(upload_to='album/', null=True, blank=True)
 
     def __str__(self):
         return self.name
