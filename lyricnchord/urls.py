@@ -1,8 +1,10 @@
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import serializers, viewsets, routers
 
-from apps.core.models import Song, Artist
+from apps.core.models import Song, Artist, Band
 
 
 class SongSerializer(serializers.ModelSerializer):
@@ -18,12 +20,12 @@ class SongViewSet(viewsets.ModelViewSet):
 
 class ArtistSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Artist
+        model = Band
         fields = '__all__'
 
 
 class ArtistViewSet(viewsets.ModelViewSet):
-    queryset = Artist.objects.all().order_by('name')
+    queryset = Band.objects.all().order_by('name')
     serializer_class = ArtistSerializer
 
 
@@ -35,3 +37,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include(router.urls)),
 ]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) #new
