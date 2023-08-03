@@ -8,9 +8,21 @@ from apps.core.models import Song, Artist, Band
 
 
 class SongSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    albums = serializers.SerializerMethodField()
+
     class Meta:
         model = Song
-        fields = '__all__'
+        fields = ('id', 'name', 'albums', 'image')
+    
+    def get_image(self, song):
+        request = self.context.get('request')
+        photo_url = song.album.first().cover.url if song.album else None
+        return request.build_absolute_uri(photo_url)
+    
+    def get_albums(self, song):
+        albums = [album.name for album in song.album.all()]
+        return albums
 
 
 class SongViewSet(viewsets.ModelViewSet):
@@ -18,20 +30,37 @@ class SongViewSet(viewsets.ModelViewSet):
     serializer_class = SongSerializer
 
 
-class ArtistSerializer(serializers.ModelSerializer):
+class BandSerializer(serializers.ModelSerializer):
+    artists = serializers.SerializerMethodField()
+    genres = serializers.SerializerMethodField()
+    songs = serializers.SerializerMethodField()
+
     class Meta:
         model = Band
-        fields = '__all__'
+        fields = ('id', 'name', 'artists', 'genres', 'bio', 'image', 'songs')
+    
+    def get_artists(self, band):
+        artists = [{'id': artist.id, 'name': artist.name} for artist in band.artist.all()]
+        return artists
 
+    def get_genres(self, band):
+        genres = [{'id': genre.id, 'name': genre.name} for genre in band.genre.all()]
+        return genres
 
-class ArtistViewSet(viewsets.ModelViewSet):
+    def get_songs(self, band):
+        album_ids = band.album_set.values_list('id', flat=True)
+        songs = Song.objects.filter(album__in=album_ids)
+        songs = [{'id': song.id, 'name': song.name} for song in songs]
+        return songs
+
+class BandViewSet(viewsets.ModelViewSet):
     queryset = Band.objects.all().order_by('name')
-    serializer_class = ArtistSerializer
+    serializer_class = BandSerializer
 
 
 router = routers.DefaultRouter()
 router.register(r'songs', SongViewSet)
-router.register(r'artists', ArtistViewSet)
+router.register(r'artists', BandViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

@@ -19,7 +19,7 @@ class Genre(models.Model):
 
 class Band(models.Model):
     name = models.CharField(max_length=255)
-    artists = models.ManyToManyField(Artist)
+    artist = models.ManyToManyField(Artist)
     genre = models.ManyToManyField(Genre, blank=True)
     bio = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='band/', null=True, blank=True)
