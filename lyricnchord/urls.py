@@ -10,10 +10,11 @@ from apps.core.models import Song, Artist, Band
 class SongSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
     albums = serializers.SerializerMethodField()
+    artist = serializers.SerializerMethodField()
 
     class Meta:
         model = Song
-        fields = ('id', 'name', 'albums', 'image')
+        fields = ('id', 'name', 'albums', 'image', 'lyrics', 'artist')
     
     def get_image(self, song):
         request = self.context.get('request')
@@ -21,8 +22,15 @@ class SongSerializer(serializers.ModelSerializer):
         return request.build_absolute_uri(photo_url)
     
     def get_albums(self, song):
-        albums = [album.name for album in song.album.all()]
+        albums = [{'id': album.id, 'name': album.name} for album in song.album.all()]
         return albums
+    
+    def get_artist(self, song):
+        artist = song.album.first().band if song.album else None
+        return {
+            'id': artist.id,
+            'name': artist.name
+        }
 
 
 class SongViewSet(viewsets.ModelViewSet):
@@ -52,6 +60,7 @@ class BandSerializer(serializers.ModelSerializer):
         songs = Song.objects.filter(album__in=album_ids)
         songs = [{'id': song.id, 'name': song.name} for song in songs]
         return songs
+
 
 class BandViewSet(viewsets.ModelViewSet):
     queryset = Band.objects.all().order_by('name')
