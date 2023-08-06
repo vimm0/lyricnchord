@@ -58,7 +58,7 @@ class BandSerializer(serializers.ModelSerializer):
     def get_songs(self, band):
         album_ids = band.album_set.values_list('id', flat=True)
         songs = Song.objects.filter(album__in=album_ids)
-        songs = [{'id': song.id, 'name': song.name} for song in songs]
+        songs = [{'id': song.id, 'name': song.name, 'lyrics': song.lyrics} for song in songs]
         return songs
 
 
